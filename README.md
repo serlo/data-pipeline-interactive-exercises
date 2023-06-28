@@ -1,8 +1,8 @@
 # data-pipeline-interactive-exercises
 
-test output: https://serlo.github.io/data-pipeline-interactive-exercises/test.json
+test output: https://serlo.github.io/data-pipeline-interactive-exercises
 
-find peak usage times
+find usage of serlo within schools
 
 proof of concept for:
 
