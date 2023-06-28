@@ -1,4 +1,7 @@
 # data-pipeline-interactive-exercises
+
+test output: https://serlo.github.io/data-pipeline-interactive-exercises/test.json
+
 find peak usage times
 
 proof of concept for:
