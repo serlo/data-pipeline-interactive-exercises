@@ -140,7 +140,7 @@ async function run() {
         })
       }
     }
-    dailyTops.sort((a, b) => a.timestamp - b.timestamp)
+    dailyTops.sort((a, b) => b.timestamp - a.timestamp)
     for (const top of dailyTops) {
       output += `
         <p>
