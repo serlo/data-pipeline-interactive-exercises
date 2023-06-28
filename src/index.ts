@@ -23,6 +23,13 @@ async function run() {
     // Step 1: load all data from 1 day
     const start = new Date(startOfToday.getTime() - i * 1000 * 60 * 60 * 24)
 
+    const dailyTops: {
+      path: string
+      timestamp: number
+      count: number
+      median: number
+    }[] = []
+
     output += `<h2>${start.toLocaleDateString('de-DE', {
       weekday: 'long',
       year: 'numeric',
@@ -115,17 +122,12 @@ async function run() {
             } users`
           )
 
-          output += `
-            <p>
-              <a href="https://de.serlo.org${path}" target="_blank">de.serlo.org${decodeURIComponent(
-            path
-          )}</a> | ${new Date(top.timestamp).toLocaleTimeString('de-DE', {
-            timeZone: 'CET',
-          })}, ${top.sessions.size} NutzerInnen, ${Math.round(
-            median / 1000 / 60
-          )} min Verweildauer (median)
-            </p>
-          `
+          dailyTops.push({
+            path,
+            timestamp: top.timestamp,
+            count: top.sessions.size,
+            median: Math.round(median / 1000 / 60),
+          })
         } else {
           break
         }
@@ -137,6 +139,20 @@ async function run() {
           })
         })
       }
+    }
+    dailyTops.sort((a, b) => a.timestamp - b.timestamp)
+    for (const top of dailyTops) {
+      output += `
+        <p>
+          <a href="https://de.serlo.org${
+            top.path
+          }" target="_blank">de.serlo.org${decodeURIComponent(
+        top.path
+      )}</a> | ${new Date(top.timestamp).toLocaleTimeString('de-DE', {
+        timeZone: 'CET',
+      })}, ${top.count} NutzerInnen, ${top.median} min Verweildauer (median)
+        </p>
+      `
     }
   }
 
