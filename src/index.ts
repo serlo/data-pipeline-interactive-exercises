@@ -1,16 +1,21 @@
 import fs from 'fs'
+import { PrismaClient } from '@prisma/client'
 
-const i: string = 'Hello, world!'
+const prisma = new PrismaClient()
 
-console.log(i)
+async function run() {
+  const count = await prisma.exerciseSubmission.count()
 
-const dir = '_output'
+  const dir = '_output'
 
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir)
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
+  }
+
+  fs.writeFileSync(dir + '/test.json', JSON.stringify({ count }), {
+    encoding: 'utf8',
+    flag: 'w',
+  })
 }
 
-fs.writeFileSync(dir + '/test.json', JSON.stringify({ key: 'value' }), {
-  encoding: 'utf8',
-  flag: 'w',
-})
+run()
