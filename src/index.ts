@@ -15,7 +15,9 @@ async function run() {
     now.getUTCDate()
   )
 
-  output += `<small>Stand: ${now.toLocaleString('de-DE')}</small>`
+  output += `<small>Stand: ${now.toLocaleString('de-DE', {
+    timeZone: 'CET',
+  })}</small>`
 
   for (let i = 0; i < 60; i++) {
     // Step 1: load all data from 1 day
@@ -26,6 +28,7 @@ async function run() {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'CET',
     })}</h2>`
 
     const end = new Date(start.getTime() + 1000 * 60 * 60 * 24)
@@ -114,11 +117,11 @@ async function run() {
 
           output += `
             <p>
-              <a href="https://de.serlo.org${path}" target="_blank">https://de.serlo.org${decodeURIComponent(
+              <a href="https://de.serlo.org${path}" target="_blank">de.serlo.org${decodeURIComponent(
             path
-          )}</a> | ${new Date(top.timestamp).toLocaleTimeString('de-DE')}, ${
-            top.sessions.size
-          } NutzerInnen, ${Math.round(
+          )}</a> | ${new Date(top.timestamp).toLocaleTimeString('de-DE', {
+            timeZone: 'CET',
+          })}, ${top.sessions.size} NutzerInnen, ${Math.round(
             median / 1000 / 60
           )} min Verweildauer (median)
             </p>
