@@ -4,7 +4,138 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function run() {
-  const count = await prisma.exerciseSubmission.count()
+  // automatically detect interesting things happening in interactive exercise folders
+
+  let output = ''
+
+  const now = new Date()
+  const startOfToday = new Date(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate()
+  )
+
+  output += `<small>Stand: ${now.toLocaleString('de-DE')}</small>`
+
+  for (let i = 0; i < 60; i++) {
+    // Step 1: load all data from 1 day
+    const start = new Date(startOfToday.getTime() - i * 1000 * 60 * 60 * 24)
+
+    output += `<h2>${start.toLocaleDateString('de-DE', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })}</h2>`
+
+    const end = new Date(start.getTime() + 1000 * 60 * 60 * 24)
+
+    const data = await prisma.exerciseSubmission.findMany({
+      where: { timestamp: { gte: start, lt: end } },
+    })
+
+    const pages = data.reduce((result, obj) => {
+      const key = obj.path
+      const entry = (result[key] = result[key] ?? [])
+      entry.push(obj)
+      return result
+    }, {} as { [key: string]: typeof data })
+
+    for (const pageEntry of Object.entries(pages)) {
+      const [path, data] = pageEntry
+
+      const sessions = data.reduce((result, obj) => {
+        const key = obj.sessionId
+        const entry = (result[key] = result[key] ?? [])
+        entry.push(obj)
+        return result
+      }, {} as { [key: string]: typeof data })
+
+      const sessionData = Object.entries(sessions).map(([id, data]) => {
+        data.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+        return {
+          start: data[0].timestamp.getTime(),
+          end: data.at(-1).timestamp.getTime(),
+          id,
+        }
+      })
+
+      const deltas: {
+        timestamp: number
+        action: 'start' | 'end'
+        id: string
+      }[] = []
+
+      sessionData.forEach((entry) => {
+        deltas.push({ action: 'start', id: entry.id, timestamp: entry.start })
+        deltas.push({ action: 'end', id: entry.id, timestamp: entry.end })
+      })
+
+      deltas.sort((a, b) => a.timestamp - b.timestamp)
+
+      const activeSessions = new Set<string>()
+
+      const highs: { timestamp: number; sessions: Set<string> }[] = []
+
+      for (const delta of deltas) {
+        if (delta.action == 'start') {
+          activeSessions.add(delta.id)
+        } else if (delta.action == 'end') {
+          activeSessions.delete(delta.id)
+        }
+        if (activeSessions.size >= 10) {
+          highs.push({
+            timestamp: delta.timestamp,
+            sessions: new Set(activeSessions),
+          })
+        }
+      }
+      while (highs.length > 0) {
+        highs.sort((a, b) => b.sessions.size - a.sessions.size)
+        const top = highs.shift()
+
+        if (top.sessions.size >= 10) {
+          // do more analysis of this moment
+          const times: number[] = []
+          sessionData.forEach((entry) => {
+            if (top.sessions.has(entry.id)) {
+              times.push(entry.end - entry.start)
+            }
+          })
+          const median = calcMedian(times)
+
+          console.log(
+            `Candidate at & ${new Date(
+              top.timestamp
+            )} on ${path}: Median ${Math.round(median / 1000 / 60)} min, ${
+              top.sessions.size
+            } users`
+          )
+
+          output += `
+            <p>
+              <a href="https://de.serlo.org${path}" target="_blank">https://de.serlo.org${decodeURIComponent(
+            path
+          )}</a> | ${new Date(top.timestamp).toLocaleTimeString('de-DE')}, ${
+            top.sessions.size
+          } NutzerInnen, ${Math.round(
+            median / 1000 / 60
+          )} min Verweildauer (median)
+            </p>
+          `
+        } else {
+          break
+        }
+
+        // remove sessions from others
+        highs.forEach((high) => {
+          top.sessions.forEach((ses) => {
+            high.sessions.delete(ses)
+          })
+        })
+      }
+    }
+  }
 
   const dir = '_output'
 
@@ -12,10 +143,45 @@ async function run() {
     fs.mkdirSync(dir)
   }
 
-  fs.writeFileSync(dir + '/test.json', JSON.stringify({ count }), {
-    encoding: 'utf8',
-    flag: 'w',
-  })
+  fs.writeFileSync(
+    dir + '/index.html',
+    `
+      <!doctype html>
+
+      <html lang="de">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+          <title>Einsatz von Serlo-Aufgaben im Unterricht</title>
+        
+        </head>
+        
+        <body>
+          <h1>Einsatz von Serlo-Aufgaben im Unterricht</h1>
+          <p>
+            Eine Serlo-Seite mit Aufgaben wird gleichzeitig von mindestens 10 Personen interaktiv genutzt -&gt; hier wird ein Einsatz im Unterricht vermutet.
+          </p>
+
+          ${output}
+        </body>
+      </html>
+  
+  `
+  )
 }
 
 run()
+
+function calcMedian(ar1: number[]) {
+  var half = Math.floor(ar1.length / 2)
+  ar1.sort(function (a, b) {
+    return a - b
+  })
+
+  if (ar1.length % 2) {
+    return ar1[half]
+  } else {
+    return (ar1[half] + ar1[half] + 1) / 2.0
+  }
+}
