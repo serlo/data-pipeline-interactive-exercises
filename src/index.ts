@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { PrismaClient } from '@prisma/client'
+import path from 'path'
 
 const prisma = new PrismaClient()
 
@@ -142,6 +143,16 @@ async function run() {
     }
     dailyTops.sort((a, b) => b.timestamp - a.timestamp)
     for (const top of dailyTops) {
+      const dateStr = new Date(top.timestamp)
+        .toLocaleDateString('de-DE', {
+          timeZone: 'Europe/Berlin',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        .replace(/\./g, '-')
+      const idResult = /\/([\d]+)\//.exec(top.path)
+      const id = idResult ? idResult[0] : top.path.substring(1)
       output += `
         <p>
           <a href="https://de.serlo.org${
@@ -150,7 +161,9 @@ async function run() {
         top.path
       )}</a> | ${new Date(top.timestamp).toLocaleTimeString('de-DE', {
         timeZone: 'CET',
-      })}, ${top.count} NutzerInnen, ${top.median} min aktive Zeit (median)
+      })}, ${top.count} NutzerInnen, ${
+        top.median
+      } min aktive Zeit (median) <a href="https://frontend-git-2321-prototyping-dashboard-serlo.vercel.app/___exercise_dashboard/details/${dateStr}/${id}" target="_blank">details</a>
         </p>
       `
     }
