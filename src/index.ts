@@ -152,7 +152,7 @@ async function run() {
         })
         .replace(/\./g, '-')
       const idResult = /\/([\d]+)\//.exec(top.path)
-      const id = idResult ? idResult[0] : top.path.substring(1)
+      const id = idResult ? idResult[1] : top.path.substring(1)
       output += `
         <p>
           <a href="https://de.serlo.org${
