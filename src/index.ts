@@ -150,7 +150,7 @@ async function run() {
         top.path
       )}</a> | ${new Date(top.timestamp).toLocaleTimeString('de-DE', {
         timeZone: 'CET',
-      })}, ${top.count} NutzerInnen, ${top.median} min Verweildauer (median)
+      })}, ${top.count} NutzerInnen, ${top.median} min aktive Zeit (median)
         </p>
       `
     }
