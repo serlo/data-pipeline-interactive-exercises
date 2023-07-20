@@ -7,6 +7,12 @@ const prisma = new PrismaClient()
 async function run() {
   // automatically detect interesting things happening in interactive exercise folders
 
+  const dir = '_output'
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
+  }
+
   let output = ''
 
   const now = new Date()
@@ -41,9 +47,28 @@ async function run() {
 
     const end = new Date(start.getTime() + 1000 * 60 * 60 * 24)
 
-    const data = await prisma.exerciseSubmission.findMany({
-      where: { timestamp: { gte: start, lt: end } },
-    })
+    const tag = end.toISOString().substring(0, 10)
+    const cacheFile = 'submissions_' + tag + '.json'
+
+    const res = await fetch(
+      'https://serlo.github.io/data-pipeline-interactive-exercises/' + cacheFile
+    )
+
+    const fromCache = res.status == 200
+
+    if (fromCache) {
+      console.log('load', cacheFile, 'from previous run')
+    }
+
+    const data = fromCache
+      ? ((await res.json()) as [])
+      : await prisma.exerciseSubmission.findMany({
+          where: { timestamp: { gte: start, lt: end } },
+        })
+
+    if (i > 0 && !fromCache) {
+      fs.writeFileSync(dir + '/' + cacheFile, JSON.stringify(data))
+    }
 
     const pages = data.reduce((result, obj) => {
       const key = obj.path
@@ -167,12 +192,6 @@ async function run() {
         </p>
       `
     }
-  }
-
-  const dir = '_output'
-
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir)
   }
 
   fs.writeFileSync(

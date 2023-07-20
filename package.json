@@ -2,8 +2,8 @@
   "name": "data-pipeline-interactive-exercises",
   "packageManager": "yarn@3.6.0",
   "dependencies": {
-    "@prisma/client": "4.16.1",
-    "prisma": "^4.16.1",
+    "@prisma/client": "5.0.0",
+    "prisma": "^5.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.5"
   },
