@@ -72,7 +72,7 @@ async function run() {
       }
     })
 
-    if (i > 0 && !fromCache) {
+    if (i > 0) {
       fs.writeFileSync(dir + '/' + cacheFile, JSON.stringify(data))
     }
 
