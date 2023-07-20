@@ -66,6 +66,12 @@ async function run() {
           where: { timestamp: { gte: start, lt: end } },
         })
 
+    data.forEach((entry) => {
+      if (typeof entry.timestamp === 'string') {
+        entry.timestamp = new Date(entry.timestamp)
+      }
+    })
+
     if (i > 0 && !fromCache) {
       fs.writeFileSync(dir + '/' + cacheFile, JSON.stringify(data))
     }
