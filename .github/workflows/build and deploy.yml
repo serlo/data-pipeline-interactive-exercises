@@ -9,9 +9,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-  schedule:
+  # disabled for now
+  #schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron: '0 2,8,14,20 * * *'
+  #  - cron: '0 2,8,14,20 * * *'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
