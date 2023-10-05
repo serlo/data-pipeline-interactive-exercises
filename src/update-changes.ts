@@ -4,7 +4,7 @@ import { DumpData, extractFromDump } from './extract-from-dump'
 
 const startDate = '2023-06-12'
 
-const tmp_endDate = '2023-06-30'
+const tmp_endDate = '2023-07-30'
 
 interface Changes {
   __start: string
