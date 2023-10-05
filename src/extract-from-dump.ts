@@ -51,7 +51,10 @@ export async function extractFromDump(date: string): Promise<DumpData | null> {
       `gsutil cp gs://anonymous-data/dump-${date}.zip ./tmp/dump.zip`
     )
     console.log(stdout, stderr)
-  } catch (e) {}
+  } catch (e) {
+    console.log('fetching database failed', date)
+    return null
+  }
   if (!existsSync('./tmp/dump.zip')) {
     console.log('database dump missing, skipping', date)
     return null
