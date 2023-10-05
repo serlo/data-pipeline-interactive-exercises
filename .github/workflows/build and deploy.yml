@@ -11,7 +11,7 @@ on:
 
   # disabled for now
   #schedule:
-    # * is a special character in YAML so you have to quote this string
+  # * is a special character in YAML so you have to quote this string
   #  - cron: '0 2,8,14,20 * * *'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -41,6 +41,13 @@ jobs:
         run: yarn
       - name: generate prisma
         run: yarn prisma generate
+
+      - uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GCP_KEY_CONTAINER_REGISTRY }}'
+
+      - uses: google-github-actions/setup-gcloud@v1
+
       - name: Run script
         run: yarn start
       - name: Upload artifact
