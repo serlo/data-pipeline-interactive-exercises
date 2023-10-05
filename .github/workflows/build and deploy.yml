@@ -48,10 +48,16 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v1
 
+      - name: Load previous changes.json
+        run: |
+          wget -nv https://serlo.github.io/data-pipeline-interactive-exercises/changes.7z
+          7z u changes.7z
+          ls
+
       - name: Run script
         run: yarn start
 
-      - name: Zip changes
+      - name: Compress changes.json
         run: |
           7z a ./_output/changes.7z changes.json
 
