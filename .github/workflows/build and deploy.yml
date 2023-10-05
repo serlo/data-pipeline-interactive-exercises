@@ -58,8 +58,6 @@ jobs:
           mkdir raw
           wget -nv https://serlo.github.io/visits-dashboard/rawcache.7z
           7z x -p$STATS_ZIP_PW rawcache.7z -o./raw
-          cd raw
-          ls
 
       - name: Run script
         run: yarn start
