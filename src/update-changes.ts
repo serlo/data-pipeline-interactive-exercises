@@ -1,10 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { generateDateList } from './utils'
 import { DumpData, extractFromDump } from './extract-from-dump'
-
-const startDate = '2023-06-12'
-
-const tmp_endDate = '2023-07-19'
+import { startDate, tmp_endDate } from '.'
 
 interface Changes {
   __start: string

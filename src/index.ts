@@ -1,6 +1,9 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
-import { dateToLocaleDate, generateDateList } from './utils'
 import { updateChanges } from './update-changes'
+
+export const startDate = '2023-06-12'
+
+export const tmp_endDate = '2023-08-10'
 
 async function run() {
   await updateChanges()
