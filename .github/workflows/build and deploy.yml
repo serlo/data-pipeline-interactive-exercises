@@ -50,6 +50,11 @@ jobs:
 
       - name: Run script
         run: yarn start
+
+      - name: Zip changes
+        run: |
+          7z a ./_output/changes.7z changes.json
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
