@@ -3,7 +3,7 @@ import { updateChanges } from './update-changes'
 
 export const startDate = '2023-06-12'
 
-export const tmp_endDate = '2023-08-10'
+export const tmp_endDate = '2023-09-10'
 
 async function run() {
   await updateChanges()
