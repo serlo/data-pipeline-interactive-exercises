@@ -1,11 +1,14 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { updateChanges } from './update-changes'
+import { dateToLocaleDate } from './utils'
 
 export const startDate = '2023-06-12'
 
-export const tmp_endDate = '2023-09-10'
+export const endDate = dateToLocaleDate(new Date())
 
 async function run() {
+  console.log('script end date', endDate)
+
   await updateChanges()
 
   if (!existsSync('./_output')) {

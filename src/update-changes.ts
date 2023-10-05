@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { generateDateList } from './utils'
 import { DumpData, extractFromDump } from './extract-from-dump'
-import { startDate, tmp_endDate } from '.'
+import { startDate, endDate } from '.'
 
 interface Changes {
   __start: string
@@ -20,7 +20,7 @@ export async function updateChanges() {
     ? JSON.parse(readFileSync('./changes.json', 'utf-8'))
     : { data: {}, __start: startDate, __end: null }
 
-  const dates = generateDateList(startDate, tmp_endDate)
+  const dates = generateDateList(startDate, endDate)
 
   const indexOfEndDate = changes.__end ? dates.indexOf(changes.__end) : -1
 
