@@ -46,10 +46,12 @@ export async function extractFromDump(date: string): Promise<DumpData | null> {
   if (!existsSync('./tmp')) {
     mkdirSync('./tmp')
   }
-  const { stdout, stderr } = await exec(
-    `gsutil cp gs://anonymous-data/dump-${date}.zip ./tmp/dump.zip`
-  )
-  console.log(stdout, stderr)
+  try {
+    const { stdout, stderr } = await exec(
+      `gsutil cp gs://anonymous-data/dump-${date}.zip ./tmp/dump.zip`
+    )
+    console.log(stdout, stderr)
+  } catch (e) {}
   if (!existsSync('./tmp/dump.zip')) {
     console.log('database dump missing, skipping', date)
     return null
