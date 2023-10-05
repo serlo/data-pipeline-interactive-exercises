@@ -51,7 +51,7 @@ jobs:
       - name: Load previous changes.json
         run: |
           wget -nv https://serlo.github.io/data-pipeline-interactive-exercises/changes.7z
-          7z u changes.7z
+          7z x changes.7z
           ls
 
       - name: Run script
