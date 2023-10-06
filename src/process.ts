@@ -120,4 +120,36 @@ export async function process(uuids: number[]) {
       JSON.stringify(folderData)
     )
   }
+
+  console.log('build folder overview')
+  const folderOverview: {
+    id: number
+    title: string
+    changesCount: number
+    visitCount: number
+    solvedCount: number
+  }[] = uuids
+    .map((uuid) => {
+      let visitCount = 0
+      let solvedCount = 0
+
+      for (let i = 0; i + 1 < dates.length; i++) {
+        const date = dates[i]
+        visitCount += visits[date][uuid] ?? 0
+        solvedCount += solved[date][uuid]?.size ?? 0
+      }
+
+      return {
+        id: uuid,
+        title: titles[uuid],
+        changesCount: changes.data[uuid].length - 1,
+        visitCount,
+        solvedCount,
+      }
+    })
+    .filter((entry) => entry.changesCount >= 0)
+  writeFileSync(
+    './_output/folderData/overview.json',
+    JSON.stringify(folderOverview)
+  )
 }
