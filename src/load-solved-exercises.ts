@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { startDate } from '.'
-import { generateDateList } from './utils'
+import { dateToLocaleDate, generateDateList } from './utils'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -9,7 +9,11 @@ export async function loadSolvedExercises() {
   if (!existsSync('./solved')) {
     mkdirSync('./solved')
   }
-  const endDate = '2023-09-17'
+
+  // data for today is not complete, so only load up to yesterday
+  const endDate = dateToLocaleDate(
+    new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+  )
   const dates = generateDateList(startDate, endDate)
 
   for (const date of dates) {
