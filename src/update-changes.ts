@@ -3,7 +3,7 @@ import { generateDateList } from './utils'
 import { DumpData, extractFromDump } from './extract-from-dump'
 import { startDate, endDate } from '.'
 
-interface Changes {
+export interface Changes {
   __start: string
   __end: string | null
   data: {

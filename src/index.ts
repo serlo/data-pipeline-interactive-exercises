@@ -3,6 +3,7 @@ import { updateChanges } from './update-changes'
 import { dateToLocaleDate } from './utils'
 import { loadSolvedExercises } from './load-solved-exercises'
 import { loadTitles } from './load-titles'
+import { process } from './process'
 
 export const startDate = '2023-06-12'
 
@@ -31,6 +32,12 @@ async function run() {
   if (!existsSync('./_output')) {
     mkdirSync('./_output')
   }
+  if (!existsSync('./_output/folderData')) {
+    mkdirSync('./_output/folderData')
+  }
+
+  await process(uuids)
+
   writeFileSync('./_output/index.html', 'Hallo, Welt!')
 }
 

@@ -29,3 +29,21 @@ export function dateToLocaleDate(date: Date) {
 
   return formattedDate
 }
+
+export function pathToId(path) {
+  const regex = /^\/[^/]+\/(\d+)\/[^/]+$/
+  const match = path.match(regex)
+
+  const regex2 = /^\/(\d+)$/
+  const match2 = path.match(regex2)
+
+  let id = -1
+
+  if (match) {
+    id = parseInt(match[1])
+  }
+  if (match2) {
+    id = parseInt(match2[1])
+  }
+  return id
+}
