@@ -11,7 +11,7 @@ on:
 
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron: '0 8 * * *'
+    - cron: '0 6 * * *'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -52,6 +52,13 @@ jobs:
         run: |
           wget -nv https://serlo.github.io/data-pipeline-interactive-exercises/changes.7z
           7z x changes.7z
+
+      - name: Load previous solved
+        run: |
+          wget -nv https://serlo.github.io/data-pipeline-interactive-exercises/solved.7z
+          7z x solved.7z -p$STATS_ZIP_PW -o./solved
+          cd solved
+          ls
 
       - name: Load visits
         run: |
