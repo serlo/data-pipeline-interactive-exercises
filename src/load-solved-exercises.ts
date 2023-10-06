@@ -9,7 +9,7 @@ export async function loadSolvedExercises() {
   if (!existsSync('./solved')) {
     mkdirSync('./solved')
   }
-  const endDate = '2023-07-17'
+  const endDate = '2023-09-17'
   const dates = generateDateList(startDate, endDate)
 
   for (const date of dates) {
