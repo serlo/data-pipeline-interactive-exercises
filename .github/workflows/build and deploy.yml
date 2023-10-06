@@ -66,6 +66,10 @@ jobs:
         run: |
           7z a ./_output/changes.7z changes.json
 
+      - name: Compress solved
+        run: |
+          7z a ./_output/solved.7z -p$STATS_ZIP_PW ./solved/*
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
