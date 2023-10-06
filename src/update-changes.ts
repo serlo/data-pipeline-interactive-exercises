@@ -15,7 +15,7 @@ interface Changes {
   }
 }
 
-export async function updateChanges() {
+export async function updateChanges(uuids: number[]) {
   const changes: Changes = existsSync('./changes.json')
     ? JSON.parse(readFileSync('./changes.json', 'utf-8'))
     : { data: {}, __start: startDate, __end: null }
@@ -30,17 +30,6 @@ export async function updateChanges() {
   ) {
     throw 'Fatal: changes start/end invalid. Something is broken'
   }
-
-  const res = await fetch(
-    'https://serlo.github.io/visits-dashboard/uuid_index.json'
-  )
-  const uuidIndex = await res.json()
-
-  const uuids = Object.entries(uuidIndex)
-    .filter((entry) => entry[1] == 'ExerciseFolder')
-    .map((entry) => parseInt(entry[0]))
-
-  console.log(uuids.length, 'uuids geladen')
 
   for (let i = indexOfEndDate + 1; i < dates.length; i++) {
     console.log('running update for', dates[i])

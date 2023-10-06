@@ -134,3 +134,6 @@ _output/
 tmp
 changes.json
 solved
+raw
+*.7z
+titles.json

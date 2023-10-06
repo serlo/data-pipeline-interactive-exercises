@@ -74,6 +74,7 @@ jobs:
       - name: Compress solved
         run: |
           7z a ./_output/solved.7z -p$STATS_ZIP_PW ./solved/*
+          mv titles.json ./_output/titles.json
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
