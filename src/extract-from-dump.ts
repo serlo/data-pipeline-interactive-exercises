@@ -127,7 +127,7 @@ function readDB() {
                   const values = match[1].split(',')
                   //arrayOfArrays.push(values);
                   uuid[parseInt(values[0])] = {
-                    trashed: values[0] == 1,
+                    trashed: values[1] == 1,
                     discriminator: values[2].replace(/'/g, ''),
                   }
                 }

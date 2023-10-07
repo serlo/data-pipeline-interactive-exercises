@@ -48,10 +48,10 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v1
 
-      - name: Load previous changes.json
-        run: |
-          wget -nv https://serlo.github.io/data-pipeline-interactive-exercises/changes.7z
-          7z x changes.7z
+      # - name: Load previous changes.json
+      #   run: |
+      #     wget -nv https://serlo.github.io/data-pipeline-interactive-exercises/changes.7z
+      #     7z x changes.7z
 
       - name: Load previous solved, titles
         run: |
