@@ -22,6 +22,8 @@ export interface FolderData {
     content: object[]
     solved?: number
     visits?: number
+    medianTime?: number
+    medianTimeCount?: number
     solvedByEntity: { [key: number]: number }
   }[]
 }
@@ -54,6 +56,11 @@ export async function process(uuids: number[]) {
   const solvedByEntity: {
     [key: string]: { [key: string]: { [key: number]: Set<string> } }
   } = {}
+  const solvedByEntityAndSessionTimestamps: {
+    [key: string]: {
+      [key: string]: { [sessionId: string]: number[] }
+    }
+  } = {}
   for (let i = 0; i + 1 < dates.length; i++) {
     const date = dates[i]
     const psRaw: SolvedData = JSON.parse(
@@ -62,6 +69,7 @@ export async function process(uuids: number[]) {
 
     solved[date] = {}
     solvedByEntity[date] = {}
+    solvedByEntityAndSessionTimestamps[date] = {}
 
     psRaw.forEach((dp) => {
       const id = pathToId(dp.path)
@@ -77,6 +85,19 @@ export async function process(uuids: number[]) {
           solvedByEntity[date][id][dp.entityId] = new Set()
         }
         solvedByEntity[date][id][dp.entityId].add(dp.sessionId)
+
+        // collect timestamps of all solves
+        if (!solvedByEntityAndSessionTimestamps[date][id]) {
+          solvedByEntityAndSessionTimestamps[date][id] = {}
+        }
+
+        if (!solvedByEntityAndSessionTimestamps[date][id][dp.sessionId]) {
+          solvedByEntityAndSessionTimestamps[date][id][dp.sessionId] = []
+        }
+
+        solvedByEntityAndSessionTimestamps[date][id][dp.sessionId].push(
+          new Date(dp.timestamp).getTime()
+        )
       }
     })
   }
@@ -99,6 +120,7 @@ export async function process(uuids: number[]) {
           const dates = generateDateList(change.start, change.end)
           let s = 0
           let v = 0
+          let times: number[] = []
           const sbe: { [key: number]: number } = {}
           for (let i = 0; i + 1 < dates.length; i++) {
             s += solved[dates[i]][uuid]?.size ?? 0
@@ -109,9 +131,36 @@ export async function process(uuids: number[]) {
                 sbe[key] += solvedByEntity[dates[i]][uuid][key].size
               }
             }
+            if (solvedByEntityAndSessionTimestamps[dates[i]][uuid]) {
+              const rawTimestamps =
+                solvedByEntityAndSessionTimestamps[dates[i]][uuid]
+              for (const id in rawTimestamps) {
+                const t = rawTimestamps[id]
+                const min = Math.min(...t)
+                const max = Math.max(...t)
+                times.push(max - min)
+              }
+            }
           }
 
-          return { ...change, solved: s, visits: v, solvedByEntity: sbe }
+          const medianTime = median(times)
+          /*if (medianTime > 0) {
+            console.log(
+              uuid,
+              change.start,
+              Math.round(median(times) / 1000 / 60),
+              times.length
+            )
+          }*/
+
+          return {
+            ...change,
+            solved: s,
+            visits: v,
+            solvedByEntity: sbe,
+            medianTime,
+            medianTimeCount: times.length,
+          }
         }
       }),
     }
@@ -152,4 +201,17 @@ export async function process(uuids: number[]) {
     './_output/folderData/overview.json',
     JSON.stringify(folderOverview)
   )
+}
+
+function median(numbers: number[]) {
+  if (numbers.length == 0) return -1
+
+  const sorted = Array.from(numbers).sort((a, b) => a - b)
+  const middle = Math.floor(sorted.length / 2)
+
+  if (sorted.length % 2 === 0) {
+    return (sorted[middle - 1] + sorted[middle]) / 2
+  }
+
+  return sorted[middle]
 }
