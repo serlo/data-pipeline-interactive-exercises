@@ -48,7 +48,7 @@ export async function extractFromDump(date: string): Promise<DumpData | null> {
   }
   try {
     const { stdout, stderr } = await exec(
-      `gsutil cp gs://anonymous-data/dump-${date}.zip ./tmp/dump.zip`
+      `gsutil cp gs://anonymous-dump/dump-${date}.zip ./tmp/dump.zip`
     )
     console.log(stdout, stderr)
   } catch (e) {
